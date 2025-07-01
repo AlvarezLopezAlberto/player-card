@@ -1,0 +1,64 @@
+/* --- layout / reset --- */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  background:#222;
+  font-family:sans-serif;
+}
+.scene{perspective:1000px}
+
+/* --- card base --- */
+.card{
+  position:relative;
+  width:412px;          /* tu tamaño */
+  height:713px;
+  transform-style:preserve-3d;
+  transition:transform .4s ease-out;
+  overflow:hidden;      /* recorte */
+  border-radius:10px;   /* mismo radio que el marco */
+  --sx:.5;              /* custom props para sheen */
+  --sy:.5;
+}
+
+/* --- layers --- */
+.layer{
+  position:absolute;
+  top:-10%;             /* colchón para que nunca se vea borde */
+  left:-10%;
+  width:120%;
+  height:120%;
+  transform-origin:center;
+  backface-visibility:hidden;
+  pointer-events:none;
+  user-select:none;
+}
+
+/* profundidad: arte sobre fondo */
+.bg  {transform:translateZ(0)}
+.art {transform:translateZ(30px)}  /* parallax extra */
+
+/* --- sheen / holo --- */
+.card::after{
+  content:'';
+  position:absolute;inset:0;
+  background:linear-gradient(
+    130deg,
+    rgba(255,255,255,.6) 0%,
+    rgba(255,255,255,.05) 40%,
+    rgba(0,0,0,0) 70%
+  );
+  mix-blend-mode:screen;
+  transform:translateZ(60px);
+  background-size:150%;
+  background-position:
+    calc(var(--sx)*100%) calc(var(--sy)*100%);
+  opacity:.6;
+  transition:opacity .3s ease-out;
+  pointer-events:none;
+}
+
+/* fade cuando sale el puntero */
+.card.is-out::after{opacity:0}
