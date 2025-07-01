@@ -13,8 +13,8 @@ body{
 /* --- card base --- */
 .card{
   position:relative;
-  width:412px;          /* tu tamaño */
-  height:713px;
+  width:480px;          /* tu tamaño */
+  height:830px;
   transform-style:preserve-3d;
   transition:transform .4s ease-out;
   overflow:hidden;      /* recorte */
