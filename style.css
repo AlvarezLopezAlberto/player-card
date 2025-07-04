@@ -24,8 +24,26 @@ body{
   transition:transform .4s ease-out;
   overflow:hidden;      /* recorte */
   border-radius:10px;   /* mismo radio que el marco */
-  --sx:.5;              /* custom props para sheen */
-  --sy:.5;
+}
+
+.card.is-flipped{transform:rotateY(180deg)}
+
+.face{
+  position:absolute;
+  inset:0;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+
+.front{--sx:.5;--sy:.5;}
+.back{
+  transform:rotateY(180deg);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#111;
+  color:#fff;
+  font-size:2rem;
 }
 
 /* --- layers --- */
@@ -46,7 +64,7 @@ body{
 .art {transform:translateZ(30px)}  /* parallax extra */
 
 /* --- sheen / holo --- */
-.card::after{
+.front::after{
   content:'';
   position:absolute;inset:0;
   background:linear-gradient(
@@ -66,4 +84,4 @@ body{
 }
 
 /* fade cuando sale el puntero */
-.card.is-out::after{opacity:0}
+.card.is-out .front::after{opacity:0}
