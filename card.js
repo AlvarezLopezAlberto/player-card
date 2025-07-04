@@ -7,6 +7,7 @@
   const maxRot = 10;        // deg
   const maxPar = 8;         // px parallax
   let rect, rx=0, ry=0, px=0, py=0, ticking=false;
+  let isFlipped = false;
 
   /* helpers ----------------------------------------------------- */
   const clamp = (v,min,max)=>Math.min(Math.max(v,min),max);
@@ -18,10 +19,11 @@
   };
 
   const update = () => {
+    const base = isFlipped ? 180 : 0;
     /* apply rotation */
-    card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    card.style.transform = `rotateX(${rx}deg) rotateY(${ry + base}deg)`;
     /* parallax (art > bg) */
-    bg .style.transform = `translateZ(0)      translate(${px/2}px,${py/2}px)`;
+    bg.style.transform  = `translateZ(0)      translate(${px/2}px,${py/2}px)`;
     art.style.transform = `translateZ(30px)   translate(${px}px,${py}px)`;
     ticking = false;
   };
@@ -61,11 +63,11 @@
   const onLeave = () => {
     card.classList.add('is-out');
     card.style.transition = 'transform .4s ease-out';
-    bg .style.transition  = art.style.transition = 'transform .4s ease-out';
+    bg.style.transition  = art.style.transition = 'transform .4s ease-out';
     /* reset */
     rx = ry = px = py = 0;
-    card.style.transform = '';
-    bg .style.transform  = '';
+    card.style.transform = isFlipped ? 'rotateY(180deg)' : '';
+    bg.style.transform  = '';
     art.style.transform  = '';
   };
 
@@ -76,6 +78,10 @@
   card.addEventListener('touchstart',   onEnter, {passive:true});
   card.addEventListener('touchmove',    throttle(onMove, 16), {passive:true});
   card.addEventListener('touchend',     onLeave);
+  card.addEventListener('click', () => {
+    isFlipped = !isFlipped;
+    update();
+  });
 
   /* simple throttle (ms) */
   function throttle(fn, limit){
