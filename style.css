@@ -8,13 +8,18 @@ body{
   background:#D8F111;
   font-family:sans-serif;
 }
-.scene{perspective:1000px}
+.scene{
+  perspective:1000px;
+  width:100%;
+  max-width:480px;
+}
 
 /* --- card base --- */
 .card{
   position:relative;
-  width:480px;          /* tu tamaño */
-  height:830px;
+  width:100%;
+  max-width:480px;
+  aspect-ratio:480/830;
   transform-style:preserve-3d;
   transition:transform .4s ease-out;
   overflow:hidden;      /* recorte */
