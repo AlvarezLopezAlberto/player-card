@@ -1,11 +1,11 @@
-/* --- layout / reset --- */
+/* --- reset & layout --- */
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   display:flex;
   justify-content:center;
   align-items:center;
   height:100vh;
-  background:#D8F111;
+  background:#D8F111;       /* cambia o hazlo transparent si embebes */
   font-family:sans-serif;
 }
 .scene{perspective:1000px}
@@ -13,32 +13,42 @@ body{
 /* --- card base --- */
 .card{
   position:relative;
-  width:480px;          /* tu tamaño */
+  width:480px;               /* tu tamaño */
   height:830px;
   transform-style:preserve-3d;
   transition:transform .4s ease-out;
-  overflow:hidden;      /* recorte */
-  border-radius:10px;   /* mismo radio que el marco */
-  --sx:.5;              /* custom props para sheen */
-  --sy:.5;
+  overflow:hidden;
+  border-radius:10px;
+  --sx:.5; --sy:.5;          /* props sheen */
 }
 
-/* --- layers --- */
+/* flip on .is-flipped */
+.card.is-flipped{transform:rotateY(180deg)}
+
+/* --- faces --- */
+.face{
+  position:absolute;inset:0;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+
+/* cara trasera colocada al revés */
+.back{transform:rotateY(180deg)}
+
+/* --- layers dentro de cada face --- */
 .layer{
   position:absolute;
-  top:-10%;             /* colchón para que nunca se vea borde */
-  left:-10%;
-  width:120%;
-  height:120%;
+  top:-10%; left:-10%;
+  width:120%; height:120%;
   transform-origin:center;
   backface-visibility:hidden;
   pointer-events:none;
   user-select:none;
 }
 
-/* profundidad: arte sobre fondo */
-.bg  {transform:translateZ(0)}
-.art {transform:translateZ(30px)}  /* parallax extra */
+/* profundidad (solo front necesita parallax extra) */
+.front .bg  {transform:translateZ(0)}
+.front .art {transform:translateZ(30px)}
 
 /* --- sheen / holo --- */
 .card::after{
@@ -60,5 +70,5 @@ body{
   pointer-events:none;
 }
 
-/* fade cuando sale el puntero */
+/* desvanecer cuando sale el puntero */
 .card.is-out::after{opacity:0}

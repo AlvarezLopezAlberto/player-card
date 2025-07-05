@@ -7,10 +7,20 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+
   <div class="scene">
     <div class="card" id="card">
-      <img src="assets/player-card-bg.png"   alt="background" class="layer bg">
-      <img src="assets/player-card.png" alt="artwork"    class="layer art">
+      <!-- Cara frontal -->
+      <div class="face front">
+        <img src="assets/player-card-bg.png"   alt="background" class="layer bg">
+        <img src="assets/player-card.png"      alt="artwork"    class="layer art">
+      </div>
+
+      <!-- Cara trasera (personaliza a tu gusto) -->
+      <div class="face back">
+        <!-- aquí puede ir otra imagen o puro HTML -->
+        <img src="assets/player-card-back.png" alt="reverse"    class="layer">
+      </div>
     </div>
   </div>
 
