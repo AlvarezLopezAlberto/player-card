@@ -1,11 +1,9 @@
 /* --- reset & layout --- */
 *{box-sizing:border-box;margin:0;padding:0}
 body{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  background:#D8F111;       /* cambia o hazlo transparent si embebes */
+  display:flex;justify-content:center;align-items:center;
+  min-height:100dvh;              /* d-viewport en móviles */
+  background:#D8F111;
   font-family:sans-serif;
 }
 .scene{perspective:1000px}
@@ -13,75 +11,51 @@ body{
 /* --- card base --- */
 .card{
   position:relative;
-  width:300px;               /* tu tamaño */
-  height:517px;
+  width:clamp(200px,90vw,480px);  /* fluye de 200 px a 480 px */
+  aspect-ratio:480/830;           /* mantiene proporción */
   transform-style:preserve-3d;
   transition:transform .4s ease-out;
   overflow:hidden;
   border-radius:10px;
-  --sx:.5; --sy:.5;          /* props sheen */
-}
-.inner{
-  position:relative;
-  width:100%;height:100%;
-  transform-style:preserve-3d;
-  transition:transform .6s ease;
+  --sx:.5;--sy:.5;                /* props para sheen */
 }
 
-/* giro cuando la carta está volteada */
+/* flip */
+.inner{position:relative;width:100%;height:100%;
+  transform-style:preserve-3d;transition:transform .6s ease}
 .inner.is-flipped{transform:rotateY(180deg)}
 
-/* caras ------------------------------------------------------- */
+/* caras */
 .face{position:absolute;inset:0;backface-visibility:hidden}
-.back{transform:rotateY(180deg)} /* confronta la otra cara */
-
-/* flip on .is-flipped */
-.card.is-flipped{transform:rotateY(180deg)}
-
-/* --- faces --- */
-.face{
-  position:absolute;inset:0;
-  transform-style:preserve-3d;
-  backface-visibility:hidden;
-}
-
-/* cara trasera colocada al revés */
 .back{transform:rotateY(180deg)}
 
-/* --- layers dentro de cada face --- */
+/* --- layers (parallax) --- */
 .layer{
-  position:absolute;
-  top:-10%; left:-10%;
-  width:120%; height:120%;
+  position:absolute;top:-10%;left:-10%;
+  width:120%;height:120%;              /* colchón al inclinar */
   transform-origin:center;
   backface-visibility:hidden;
   pointer-events:none;
   user-select:none;
 }
 
-/* profundidad (solo front necesita parallax extra) */
+/* profundidad solo en la cara frontal */
 .front .bg  {transform:translateZ(0)}
-.front .art {transform:translateZ(30px)}
+.front .art {transform:translateZ(30px)}  /* se ve bien incluso chica */
 
 /* --- sheen / holo --- */
 .card::after{
   content:'';
   position:absolute;inset:0;
-  background:linear-gradient(
-    130deg,
-    rgba(255,255,255,.6) 0%,
-    rgba(255,255,255,.05) 40%,
-    rgba(0,0,0,0) 70%
-  );
   mix-blend-mode:screen;
-  transform:translateZ(60px);
+  background:linear-gradient(130deg,
+              rgba(255,255,255,.6) 0%,
+              rgba(255,255,255,.05) 40%,
+              rgba(0,0,0,0) 70%);
   background-size:150%;
   background-position:
     calc(var(--sx)*100%) calc(var(--sy)*100%);
-  opacity:.6;
-  transition:opacity .3s ease-out;
-  pointer-events:none;
+  transform:translateZ(60px);
+  opacity:.6;transition:opacity .3s ease-out;pointer-events:none;
 }
-
-/* desvanecer cuando sale el puntero */
-.card.is-out::after{opacity:0}
+.card.is-out::after{opacity:0}          /* se apaga al salir puntero */

@@ -1,70 +1,79 @@
-/* Card parallax + flip 3-D */
+/* Card: parallax + flip + responsive */
 (() => {
   const card  = document.getElementById('card');
-  const inner = document.getElementById('inner');
+  const inner = document.getElementById('inner');   // contenedor del flip
   const bg    = card.querySelector('.bg');
   const art   = card.querySelector('.art');
 
-  const maxRot = 10, maxPar = 8;
+  const maxRot = 10;       // grados
+  let maxPar   = 8;        // px (se recalcula con el tamaño)
   let rect, rx=0, ry=0, px=0, py=0, ticking=false;
 
-  /* helpers */
-  const clamp   = (v,min,max)=>Math.min(Math.max(v,min),max);
+  /* ---------- util ---------- */
+  const clamp = (v,min,max)=>Math.min(Math.max(v,min),max);
   const flipped = () => inner.classList.contains('is-flipped');
 
-  /* ---------- render ---------- */
-  function render(){
-    /* siempre rotamos la tarjeta */
-    card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+  const recalc = () => {                 // llama en resize / enter
+    rect = card.getBoundingClientRect();
+    maxPar = rect.width * 0.02;          // 2 % del ancho → feel responsive
+  };
 
-    /* parallax solo si está al frente */
-    if(!flipped()){
-      bg .style.transform = `translate(${px/2}px,${py/2}px)`;
-      art.style.transform = `translateZ(30px) translate(${px}px,${py}px)`;
-    }
-    ticking = false;
-  }
-  const tick = () => !ticking && (ticking=true, requestAnimationFrame(render));
-
-  /* ---------- movimiento ---------- */
-  function handleMove(e){
-    rect = rect || card.getBoundingClientRect();
-    const pX = ( (e.touches?e.touches[0].clientX:e.clientX) - rect.left ) / rect.width;
-    const pY = ( (e.touches?e.touches[0].clientY:e.clientY) - rect.top  ) / rect.height;
-
-    ry =  (pX-.5)*2*maxRot;
-    rx = -(pY-.5)*2*maxRot;
-
-    px = -(pX-.5)*2*maxPar;
-    py = -(pY-.5)*2*maxPar;
-
-    card.style.setProperty('--sx',pX);
-    card.style.setProperty('--sy',pY);
-
-    tick();
-  }
-
-  /* ---------- reset ---------- */
-  function reset(){
+  const reset = () => {                  // borra transform inline
     rx=ry=px=py=0;
     card.style.removeProperty('transform');
-    bg .style.removeProperty('transform');
-    art.style.removeProperty('transform');
-  }
+    bg  .style.removeProperty('transform');
+    art .style.removeProperty('transform');
+  };
 
-  /* ---------- flip ---------- */
+  /* ---------- render loop ---------- */
+  const render = () => {
+    if (flipped()){ticking=false;return;}          // pausa parallax volteada
+    card.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
+    bg .style.transform = `translate(${px/2}px,${py/2}px)`;
+    art.style.transform = `translateZ(30px) translate(${px}px,${py}px)`;
+    ticking=false;
+  };
+  const tick = () => !ticking && (ticking=true, requestAnimationFrame(render));
+
+  /* ---------- pointer / touch move ---------- */
+  const move = e => {
+    if (flipped()) return;
+    const x = (e.touches?e.touches[0].clientX:e.clientX) - rect.left;
+    const y = (e.touches?e.touches[0].clientY:e.clientY) - rect.top;
+
+    const nx = clamp(x/rect.width ,0,1);
+    const ny = clamp(y/rect.height,0,1);
+
+    ry =  (nx-.5)*2*maxRot;
+    rx = -(ny-.5)*2*maxRot;
+    px = -(nx-.5)*2*maxPar;
+    py = -(ny-.5)*2*maxPar;
+
+    card.style.setProperty('--sx',nx);
+    card.style.setProperty('--sy',ny);
+
+    tick();
+  };
+
+  /* ---------- events ---------- */
+  const throttle=(fn,ms)=>{
+    let wait=false;return(...a)=>{if(wait)return;fn(...a);wait=true;setTimeout(()=>wait=false,ms);}
+  };
+
+  card.addEventListener('pointerenter',()=>{recalc();});
+  card.addEventListener('pointermove',throttle(move,16));
+  card.addEventListener('pointerleave',reset);
+
+  card.addEventListener('touchstart',recalc,{passive:true});
+  card.addEventListener('touchmove',throttle(move,16),{passive:true});
+  card.addEventListener('touchend',reset);
+
+  /* flip */
   card.addEventListener('click',()=>{
     inner.classList.toggle('is-flipped');
-    reset();                  // limpia tilt/parallax al voltear
+    reset();                           // centra antes de girar
   });
 
-  /* ---------- listeners ---------- */
-  const throttle=(fn,ms)=>{let w=false;return(...a)=>{if(w)return;fn(...a);w=true;setTimeout(()=>w=false,ms);}};
-
-  card.addEventListener('pointerenter',()=>{rect=card.getBoundingClientRect()});
-  card.addEventListener('pointermove', throttle(handleMove,16));
-  card.addEventListener('pointerleave', reset);
-
-  card.addEventListener('touchmove', throttle(handleMove,16), {passive:true});
-  card.addEventListener('touchend',  reset);
+  /* responsive: reajusta en resize/orientationchange */
+  window.addEventListener('resize',recalc);
 })();
