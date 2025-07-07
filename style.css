@@ -3,7 +3,7 @@
 body{
   display:flex;justify-content:center;align-items:center;
   min-height:100dvh;              /* d-viewport en móviles */
-  background:#D8F11110;
+  background:#D8F111;
   font-family:sans-serif;
 }
 .scene{perspective:1000px}
