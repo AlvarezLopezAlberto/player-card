@@ -8,21 +8,28 @@
 </head>
 <body>
 
-<div class="scene">
-  <div class="card" id="card">
-    <div class="inner" id="inner"><!-- NUEVO -->
-      <div class="face front">
-        <img src="assets/player-card-bg.png"   class="layer bg"  alt="">
-        <img src="assets/player-card.png"      class="layer art" alt="">
-      </div>
+  <div class="scene">
+    <div class="card" id="card">
+      <div class="inner" id="inner">
 
-      <div class="face back">
-        <!-- pon lo que quieras detrás -->
-        <img src="assets/player-card-back.png" class="layer" alt="">
-      </div>
-    </div><!-- /inner -->
-  </div>
-</div>
+        <!-- Cara frontal -->
+        <div class="face front">
+          <img src="assets/player-card-bg.png" class="layer bg"  alt="background">
+
+          <img src="assets/player-card.png"    class="layer art" alt="front artwork">
+
+          <!-- FOIL: arcoíris dentro del sello -->
+          <div class="foil layer rainbow"></div>
+        </div>
+
+        <!-- Cara trasera -->
+        <div class="face back">
+          <img src="assets/player-card-back.png" class="layer" alt="reverse">
+        </div>
+
+      </div><!-- /inner -->
+    </div><!-- /card -->
+  </div><!-- /scene -->
 
   <script src="card.js"></script>
 </body>

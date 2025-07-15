@@ -1,23 +1,26 @@
-/* --- reset & layout --- */
+:root{
+  --holo-opacity: 0;           /* ← la JS lo anima 0-1              */
+  --holo-x: 50%;               /* ← posición XY del gradiente       */
+  --holo-y: 50%;
+}
+
+/* ---------------- reset & layout ---------------- */
 *{box-sizing:border-box;margin:0;padding:0}
 body{
   display:flex;justify-content:center;align-items:center;
-  min-height:100dvh;              /* d-viewport en móviles */
-  background:#D8F111;
-  font-family:sans-serif;
+  min-height:100dvh;background:#D8F111;font-family:sans-serif;
 }
 .scene{perspective:1000px}
 
-/* --- card base --- */
+/* ---------------- card base --------------------- */
 .card{
   position:relative;
-  width:clamp(200px,90vw,480px);  /* fluye de 200 px a 480 px */
-  aspect-ratio:480/830;           /* mantiene proporción */
+  width:clamp(200px,90vw,480px);
+  aspect-ratio:480/830;
   transform-style:preserve-3d;
   transition:transform .4s ease-out;
-  overflow:hidden;
-  border-radius:10px;
-  --sx:.5;--sy:.5;                /* props para sheen */
+  overflow:hidden;border-radius:10px;
+  --sx:.5;--sy:.5;                       /* para el sheen */
 }
 
 /* flip */
@@ -25,37 +28,61 @@ body{
   transform-style:preserve-3d;transition:transform .6s ease}
 .inner.is-flipped{transform:rotateY(180deg)}
 
-/* caras */
 .face{position:absolute;inset:0;backface-visibility:hidden}
 .back{transform:rotateY(180deg)}
 
-/* --- layers (parallax) --- */
+/* ------------- layers (parallax) ---------------- */
 .layer{
-  position:absolute;top:-10%;left:-10%;
-  width:120%;height:120%;              /* colchón al inclinar */
-  transform-origin:center;
-  backface-visibility:hidden;
-  pointer-events:none;
-  user-select:none;
+  position:absolute;top:-10%;left:-10%;width:120%;height:120%;
+  transform-origin:center;pointer-events:none;user-select:none;
 }
-
-/* profundidad solo en la cara frontal */
 .front .bg  {transform:translateZ(0)}
-.front .art {transform:translateZ(30px)}  /* se ve bien incluso chica */
+.front .art {transform:translateZ(30px)}
 
-/* --- sheen / holo --- */
+/* ---------------- sheen ------------------------- */
 .card::after{
-  content:'';
-  position:absolute;inset:0;
-  mix-blend-mode:screen;
+  content:'';position:absolute;inset:0;pointer-events:none;
+  mix-blend-mode:screen;opacity:.65;transition:opacity .3s ease;
   background:linear-gradient(130deg,
-              rgba(255,255,255,.6) 0%,
-              rgba(255,255,255,.05) 40%,
-              rgba(0,0,0,0) 70%);
+      rgba(255,255,255,.6) 0%,
+      rgba(255,255,255,.05) 40%,
+      rgba(0,0,0,0) 70%);
   background-size:150%;
   background-position:
-    calc(var(--sx)*100%) calc(var(--sy)*100%);
+      calc(var(--sx)*100%) calc(var(--sy)*100%);
   transform:translateZ(60px);
-  opacity:.6;transition:opacity .3s ease-out;pointer-events:none;
 }
-.card.is-out::after{opacity:0}          /* se apaga al salir puntero */
+.card.is-out::after{opacity:0}
+
+/* =================================================
+   HOLOFOIL — inspirado en simeydotme repo
+   ================================================= */
+.foil{
+  position:absolute;inset:0;transform:translateZ(40px);
+  pointer-events:none;user-select:none;
+
+  /* capa 1: sparks PNG (loop de destellos)          */
+  --spark-url: url('assets/foil-sparkle.png'); /* 512×512 gif/png transparente */
+  background-image:
+      var(--spark-url),
+      conic-gradient(
+        from 0deg at var(--holo-x) var(--holo-y),
+        #ff0060 0%, #fffb00 24%, #00f0ff 48%, #ff0060 72%, #fffb00 100%
+      );
+  background-size: 600%,                 /* sparks */
+                   250%;                 /* gradient */
+  background-blend-mode: color-dodge, color-dodge;
+  mix-blend-mode: color-dodge;
+  opacity: calc(var(--holo-opacity) * .9);    /* se enciende con la opacidad */
+  transition: opacity .15s linear;
+
+  /* recorte: ancho completo, repeat-y                */
+  mask-image: url("data:image/svg+xml;base64,AQUI_TU_BASE64");
+  -webkit-mask-image: url("data:image/svg+xml;base64,AQUI_TU_BASE64");
+  mask-repeat: repeat-y;
+  -webkit-mask-repeat: repeat-y;
+  mask-size: 100% auto;
+  -webkit-mask-size: 100% auto;
+  mask-position: center top;
+  -webkit-mask-position: center top;
+}
